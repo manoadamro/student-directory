@@ -29,8 +29,32 @@ def input_students
   # while the name is not empty
   while !name.empty? do
 
+    # get date of birth
+    puts "Enter a date of birth for #{name}: (dd/mm/yy, hit return to skip)"
+    dob = gets.chomp
+
+    # get height
+    puts "Enter height for #{name}:"
+    height = gets.chomp
+
+    # get country of birth
+    puts "Enter country of birth for #{name}:"
+    cob = gets.chomp
+
+    # get list of hobbies
+    puts "Enter hobbies for #{name}:  (separate with comma & space ', ')"
+    hobbies = gets.chomp.split(', ')
+
     # add student hash to array
-    students << {name: name, cohort: :november}
+    puts("\nadding new student:\nname: #{name}\nd.o.b #{dob}\nheight: #{height}\nc.o.b #{cob}\nhobbies: #{hobbies.join(", ")}\n")
+    students << {
+      name: name,
+      cohort: :november,
+      dob: :dob,
+      height: :height,
+      cob: :cob,
+      hobbies: :hobbies
+    }
     puts "Now we have #{students.count} students"
 
     # get the next name from user
