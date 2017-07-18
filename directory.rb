@@ -15,6 +15,7 @@
 #  {name: "Norman Bates", cohort: :november}
 #]
 
+
 # manual input for student list
 def input_students
   puts "Please enter the names of the students"
@@ -50,10 +51,10 @@ def input_students
     students << {
       name: name,
       cohort: :november,
-      dob: :dob,
-      height: :height,
-      cob: :cob,
-      hobbies: :hobbies
+      dob: dob,
+      height: height,
+      cob: cob,
+      hobbies: hobbies
     }
     puts "Now we have #{students.count} students"
 
@@ -75,18 +76,27 @@ end
 
 def print_name(name, index=-1)
 
+    cohort = ("(%s cohort)" % name[:cohort]).ljust(12)
+    dob = ("%s" % name[:dob]).ljust(10)
+    height = ("%scm" % name[:height]).ljust(6)
+    cob = ("%s" % name[:cob]).ljust(12)
+    name = ("%s" % name[:name]).ljust(25)
+
     # supports printing with or without index
     puts index >= 0 ?
 
       # if an index was supplied, print with index
-      "#{index + 1}. #{name[:name]} (#{name[:cohort]} cohort)" :
+      "#{(index + 1).to_s.ljust(2)} #{name} #{dob} #{height} #{cob} #{cohort}" :
 
       # otherwise print without index
-      "#{name[:name]} (#{name[:cohort]} cohort)"
+      "#{name} #{cohort}"
 end
+
 
 # prints the list body
 def print_list(names)
+
+  if names.empty? then return end
 
   # using 'each_with_index'
   #names.each_with_index do |name, index|
@@ -94,7 +104,8 @@ def print_list(names)
   #end
 
   # using 'while'
-  i = 0, while i < names.length do
+  i = 0
+  while i < names.length do
     print_name(names[i], i)
     i += 1
   end
@@ -138,7 +149,7 @@ end
 
 students = input_students
 print_header
-#print_list(students)
+print_list(students)
 #print_names_starting_with(students, "M")
 #print_short_names(students, 12)
 print_footer(students)
