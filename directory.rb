@@ -50,13 +50,16 @@ end
 
 
 def print_name(name, index=-1)
-  if index >= 0 then
-    puts "#{index + 1}. #{name[:name]} (#{name[:cohort]} cohort)"
-  else
-    puts "#{name[:name]} (#{name[:cohort]} cohort)"
-  end
-end
 
+    # supports printing with or without index
+    puts index >= 0 ?
+
+      # if an index was supplied, print with index
+      "#{index + 1}. #{name[:name]} (#{name[:cohort]} cohort)" :
+
+      # otherwise print without index
+      "#{name[:name]} (#{name[:cohort]} cohort)"
+end
 
 # prints the list body
 def print_list(names)
@@ -67,8 +70,7 @@ def print_list(names)
   #end
 
   # using 'while'
-  i = 0
-  while i < names.length do
+  i = 0, while i < names.length do
     print_name(names[i], i)
     i += 1
   end
@@ -77,7 +79,20 @@ end
 
 # prints list of names starting with specific letter
 def print_names_starting_with(names, letter)
-  names.select {|anyname| anyname[:name].downcase[0] == letter.downcase}.each_with_index do |name, index|
+
+  # check that a letter was supplied
+  if letter.empty? then
+    puts "Could not print names starting with letter: no letter supplied"
+
+  elsif !( letter =~ /[[:alpha:]]/)
+    puts "Could not print names starting with letter: must be a letter. (given '#{letter}')"
+
+  # make sure it was a letter
+  elsif letter.length != 1
+    puts "Could not print names starting with letter: must be a single letter. (given '#{letter}')"
+  end
+
+  names.select {|anyname| anyname[:name][0].downcase == letter.downcase}.each_with_index do |name, index|
     print_name(name, index)
   end
 end
@@ -99,7 +114,7 @@ end
 
 students = input_students
 print_header
-print_list(students)
+#print_list(students)
 #print_names_starting_with(students, "M")
 #print_short_names(students, 12)
 print_footer(students)
