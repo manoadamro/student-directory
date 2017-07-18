@@ -304,9 +304,12 @@ end
 
 
 students = input_students
-print_header
-#print_list(students)
-#print_names_starting_with(students, "M")
-#print_short_names(students, 12)
-print_by_cohort(students)
-print_footer(students)
+
+if students.count > 0 then
+  print_header
+  #print_list(students)
+  #print_names_starting_with(students, "M")
+  #print_short_names(students, 12)
+  print_by_cohort(students)
+  print_footer(students)
+end
