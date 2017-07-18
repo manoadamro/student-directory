@@ -1,19 +1,45 @@
 #!/usr/local/bin/ruby -w
 
 # a hash of students
-students = [
-  {name: "Dr. Hannibal Lecter", cohort: :november},
-  {name: "Darth Vader", cohort: :november},
-  {name: "Nurse Ratched", cohort: :november},
-  {name: "Michael Corleone", cohort: :november},
-  {name: "Alex DeLarge", cohort: :november},
-  {name: "The Wicked Witch of the West", cohort: :november},
-  {name: "Terminator", cohort: :november},
-  {name: "Freddy Krueger", cohort: :november},
-  {name: "The Joker", cohort: :november},
-  {name: "Joffrey Baratheon", cohort: :november},
-  {name: "Norman Bates", cohort: :november}
-]
+#students =
+#  {name: "Dr. Hannibal Lecter", cohort: :november},
+#  {name: "Darth Vader", cohort: :november},
+#  {name: "Nurse Ratched", cohort: :november},
+#  {name: "Michael Corleone", cohort: :november},
+#  {name: "Alex DeLarge", cohort: :november},
+#  {name: "The Wicked Witch of the West", cohort: :november},
+#  {name: "Terminator", cohort: :november},
+#  {name: "Freddy Krueger", cohort: :november},
+#  {name: "The Joker", cohort: :november},
+#  {name: "Joffrey Baratheon", cohort: :november},
+#  {name: "Norman Bates", cohort: :november}
+#]
+
+# manual input for student list
+def input_students
+  puts "Please enter the names of the students"
+  puts "To finish, hit return twice"
+
+  # create an empty array to store names
+  students = []
+
+  # get the first name, with no line break
+  name = gets.chomp
+
+  # while the name is not empty
+  while !name.empty? do
+
+    # add student hash to array
+    students << {name: name, cohort: :november}
+    puts "Now we have #{students.count} students"
+
+    # get the next name from user
+    name = gets.chomp
+  end
+
+  # return the array of students
+  students
+end
 
 # prints the student list header
 def print_header
@@ -33,6 +59,7 @@ def print_footer(names)
   puts "Overall, we have #{names.count} great students"
 end
 
+students = input_students
 print_header
 print_list(students)
 print_footer(students)
