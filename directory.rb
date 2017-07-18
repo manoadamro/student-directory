@@ -41,11 +41,13 @@ def input_students
   students
 end
 
+
 # prints the student list header
 def print_header
   puts "The students of Villains Academy"
   puts "-------------"
 end
+
 
 def print_name(name, index=-1)
   if index >= 0 then
@@ -55,12 +57,23 @@ def print_name(name, index=-1)
   end
 end
 
+
 # prints the list body
 def print_list(names)
-  names.each_with_index do |name, index|
-    print_name(name, index)
+
+  # using 'each_with_index'
+  #names.each_with_index do |name, index|
+  #  print_name(name, index)
+  #end
+
+  # using 'while'
+  i = 0
+  while i < names.length do
+    print_name(names[i], i)
+    i += 1
   end
 end
+
 
 # prints list of names starting with specific letter
 def print_names_starting_with(names, letter)
@@ -69,6 +82,7 @@ def print_names_starting_with(names, letter)
   end
 end
 
+
 # prints list of names shorter then n letters
 def print_short_names(names, max_letters=12)
   names.select {|anyname| anyname[:name].length < max_letters}.each_with_index do |name, index|
@@ -76,14 +90,16 @@ def print_short_names(names, max_letters=12)
   end
 end
 
-# prints the studentl list footer
+
+# prints the student list footer
 def print_footer(names)
   puts "Overall, we have #{names.count} great students"
 end
 
+
 students = input_students
 print_header
-#print_list(students)
+print_list(students)
 #print_names_starting_with(students, "M")
 #print_short_names(students, 12)
 print_footer(students)
