@@ -15,11 +15,117 @@
 #  {name: "Norman Bates", cohort: :november}
 #]
 
+require 'date'
+
+# used for date validation
+class String
+  def is_number?
+    true if Float(self) rescue false
+  end
+end
+
 
 # manual input for student list
 def input_students
-  puts "Please enter the names of the students"
-  puts "To finish, hit return twice"
+
+  # gets the cohort month (string)
+  def get_cohort(name)
+
+    this_month = Date::MONTHNAMES[Date.today.month]
+    puts "Which cohort will #{name} be a part of? -> hit return to use current month (#{this_month})"
+
+    while true do
+
+      # get the user to enter a date of birth
+      cohort = gets.chomp.capitalize
+
+      return this_month if cohort.empty?
+
+      # check it is valid and return
+      if Date::MONTHNAMES.include? cohort then
+        return cohort
+      else
+        puts "#{cohort} is not a valid month\ntry agin..."
+      end
+
+    end
+
+  end
+
+
+  # gets date of birth from user entry
+  def get_dob(name)
+
+    puts "Enter a date of birth for #{name}: (ddmmyy) -> hit return to skip"
+
+    while true do
+
+      # get the user to enter a date of birth
+      dob = gets.chomp.tr('/', '')
+
+      return if dob.empty?
+
+      # check it is valid and return
+      if dob.length == 6 && dob =~ /[0-3][0-9][0-1][0-9]{3}/ then
+        return "#{dob[0..1]}/#{dob[2..3]}/#{dob[4..5]}"
+
+      # if not valid, try agiain
+      else
+        puts "#{dob} is not a valid date 'ddmmyy'\ntry again..."
+      end
+    end
+
+  end
+
+
+  # gets height from user entry
+  def get_height(name)
+
+    puts "Enter height in cm for #{name}: -> hit return to skip"
+
+    while true do
+
+      # get the user to enter a height
+      height = gets.chomp
+
+      return if height.empty?
+
+      # check it is valid and return
+      if height.is_number? then return height
+
+      # if not valid, try agiain
+      else
+        puts "#{height} is not a valid height in cm, should be numeric\ntry again..."
+      end
+    end
+
+  end
+
+
+  # gets a country of brith from user entry
+  def get_cob(name)
+
+    puts "Enter country of birth for #{name}: -> hit return to skip"
+
+    # return whatever the user enters, no validation
+    return gets.chomp
+
+  end
+
+
+  # returns a formatted list of hobbies from user entry
+  def get_hobbies(name)
+
+    puts "Enter hobbies for #{name}:  (separate with comma & space ', ') -> hit return to skip"
+
+    # return whatever the user enters, no validation
+    return gets.chomp.split(', ')
+  end
+
+
+
+  puts "\nPlease enter the names of the students"
+  puts "To finish, hit return twice\n"
 
   # create an empty array to store names
   students = []
@@ -30,33 +136,34 @@ def input_students
   # while the name is not empty
   while !name.empty? do
 
-    # get date of birth
-    puts "Enter a date of birth for #{name}: (dd/mm/yy, hit return to skip)"
-    dob = gets.chomp
+    # get cohort for the new student
+    cohort = get_cohort(name)
 
-    # get height
-    puts "Enter height for #{name}:"
-    height = gets.chomp
+    # get a date of birth for the new student
+    dob = get_dob(name)
 
-    # get country of birth
-    puts "Enter country of birth for #{name}:"
-    cob = gets.chomp
+    # get height for the new student
+    height = get_height(name)
 
-    # get list of hobbies
-    puts "Enter hobbies for #{name}:  (separate with comma & space ', ')"
-    hobbies = gets.chomp.split(', ')
+    # get country of birth for the new student
+    cob = get_cob(name)
+
+    # get list of hobbies for the new student
+    hobbies = get_hobbies(name)
+
+    # print out the data we just collected
+    puts("\nadding new student:\nname: #{name}\nd.o.b #{dob}\nheight: #{height}\nc.o.b #{cob}\nhobbies: #{hobbies.join(", ")}\n")
 
     # add student hash to array
-    puts("\nadding new student:\nname: #{name}\nd.o.b #{dob}\nheight: #{height}\nc.o.b #{cob}\nhobbies: #{hobbies.join(", ")}\n")
     students << {
       name: name,
-      cohort: :november,
+      cohort: cohort,
       dob: dob,
       height: height,
       cob: cob,
       hobbies: hobbies
     }
-    puts "Now we have #{students.count} students"
+    puts "Now we have #{students.count} students\n"
 
     # get the next name from user
     name = gets.chomp
@@ -69,27 +176,42 @@ end
 
 # prints the student list header
 def print_header
+
+  width = 16
+
   puts "The students of Villains Academy"
+  puts "%s %s %s %s %s %s %s" % [
+    "ID".ljust(2),
+    "Name".ljust(width),
+    "Cohort".ljust(width),
+    "D.O.B".ljust(width),
+    "Height(cm)".ljust(width),
+    "C.O.B".ljust(width),
+    "Hobbies"
+  ]
   puts "-------------"
 end
 
 
-def print_name(name, index=-1)
+def print_name(student, index=-1)
 
-    cohort = ("(%s cohort)" % name[:cohort]).ljust(12)
-    dob = ("%s" % name[:dob]).ljust(10)
-    height = ("%scm" % name[:height]).ljust(6)
-    cob = ("%s" % name[:cob]).ljust(12)
-    name = ("%s" % name[:name]).ljust(25)
+  width = 16
+
+  name = ("%s" % student[:name]).ljust(width)
+  cohort = ("%s" % student[:cohort]).ljust(width)
+  dob = ("%s" % student[:dob]).ljust(width)
+  height = ("%scm" % student[:height]).ljust(width)
+  cob = ("%s" % student[:cob]).ljust(width)
+  hobbies = "%s" % student[:hobbies].join(', ')
 
     # supports printing with or without index
     puts index >= 0 ?
 
       # if an index was supplied, print with index
-      "#{(index + 1).to_s.ljust(2)} #{name} #{dob} #{height} #{cob} #{cohort}" :
+      "#{(index + 1).to_s.ljust(2)} #{name} #{cohort} #{dob} #{height} #{cob} #{hobbies}" :
 
       # otherwise print without index
-      "#{name} #{cohort}"
+      "   #{name} #{cohort} #{dob} #{height} #{cob} #{hobbies}"
 end
 
 
@@ -143,7 +265,7 @@ end
 
 # prints the student list footer
 def print_footer(names)
-  puts "Overall, we have #{names.count} great students"
+  puts "Overall, we have #{names.count} great students\n"
 end
 
 
