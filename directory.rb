@@ -17,6 +17,7 @@
 
 require 'date'
 
+
 # used for date validation
 class String
 
@@ -29,110 +30,111 @@ class String
 end
 
 
+@width = 16
+
+@students = []
+
+
+# gets the cohort month (string)
+def get_cohort(name)
+
+  this_month = Date::MONTHNAMES[Date.today.month]
+  puts "Which cohort will #{name} be a part of? -> hit return to use current month (#{this_month})"
+
+  while true do
+
+    # get the user to enter a date of birth
+    cohort = gets.chomp.capitalize
+
+    return this_month if cohort.empty?
+
+    # check it is valid and return
+    if Date::MONTHNAMES.include? cohort then
+      return cohort
+    else
+      puts "#{cohort} is not a valid month\ntry agin..."
+    end
+
+  end
+
+end
+
+
+# gets date of birth from user entry
+def get_dob(name)
+
+  puts "Enter a date of birth for #{name}: (ddmmyy) -> hit return to skip"
+
+  while true do
+
+    # get the user to enter a date of birth
+    dob = gets.chomp.tr('/', '')
+
+    return if dob.empty?
+
+    # check it is valid and return
+    if dob.length == 6 && dob =~ /[0-3][0-9][0-1][0-9]{3}/ then
+      return "#{dob[0..1]}/#{dob[2..3]}/#{dob[4..5]}"
+
+    # if not valid, try agiain
+    else
+      puts "#{dob} is not a valid date 'ddmmyy'\ntry again..."
+    end
+  end
+
+end
+
+
+# gets height from user entry
+def get_height(name)
+
+  puts "Enter height in cm for #{name}: -> hit return to skip"
+
+  while true do
+
+    # get the user to enter a height
+    height = gets.chomp
+
+    return if height.empty?
+
+    # check it is valid and return
+    if height.is_number? then return height
+
+    # if not valid, try agiain
+    else
+      puts "#{height} is not a valid height in cm, should be numeric\ntry again..."
+    end
+  end
+
+end
+
+
+# gets a country of brith from user entry
+def get_cob(name)
+
+  puts "Enter country of birth for #{name}: -> hit return to skip"
+
+  # return whatever the user enters, no validation
+  return gets.chomp
+
+end
+
+
+# returns a formatted list of hobbies from user entry
+def get_hobbies(name)
+
+  puts "Enter hobbies for #{name}:  (separate with comma & space ', ') -> hit return to skip"
+
+  # return whatever the user enters, no validation
+  return gets.chomp.split(', ')
+end
+
+
 # manual input for student list
 def input_students
 
-  # gets the cohort month (string)
-  def get_cohort(name)
-
-    this_month = Date::MONTHNAMES[Date.today.month]
-    puts "Which cohort will #{name} be a part of? -> hit return to use current month (#{this_month})"
-
-    while true do
-
-      # get the user to enter a date of birth
-      cohort = gets.chomp.capitalize
-
-      return this_month if cohort.empty?
-
-      # check it is valid and return
-      if Date::MONTHNAMES.include? cohort then
-        return cohort
-      else
-        puts "#{cohort} is not a valid month\ntry agin..."
-      end
-
-    end
-
-  end
-
-
-  # gets date of birth from user entry
-  def get_dob(name)
-
-    puts "Enter a date of birth for #{name}: (ddmmyy) -> hit return to skip"
-
-    while true do
-
-      # get the user to enter a date of birth
-      dob = gets.chomp.tr('/', '')
-
-      return if dob.empty?
-
-      # check it is valid and return
-      if dob.length == 6 && dob =~ /[0-3][0-9][0-1][0-9]{3}/ then
-        return "#{dob[0..1]}/#{dob[2..3]}/#{dob[4..5]}"
-
-      # if not valid, try agiain
-      else
-        puts "#{dob} is not a valid date 'ddmmyy'\ntry again..."
-      end
-    end
-
-  end
-
-
-  # gets height from user entry
-  def get_height(name)
-
-    puts "Enter height in cm for #{name}: -> hit return to skip"
-
-    while true do
-
-      # get the user to enter a height
-      height = gets.chomp
-
-      return if height.empty?
-
-      # check it is valid and return
-      if height.is_number? then return height
-
-      # if not valid, try agiain
-      else
-        puts "#{height} is not a valid height in cm, should be numeric\ntry again..."
-      end
-    end
-
-  end
-
-
-  # gets a country of brith from user entry
-  def get_cob(name)
-
-    puts "Enter country of birth for #{name}: -> hit return to skip"
-
-    # return whatever the user enters, no validation
-    return gets.chomp
-
-  end
-
-
-  # returns a formatted list of hobbies from user entry
-  def get_hobbies(name)
-
-    puts "Enter hobbies for #{name}:  (separate with comma & space ', ') -> hit return to skip"
-
-    # return whatever the user enters, no validation
-    return gets.chomp.split(', ')
-  end
-
-
-
   puts "\nPlease enter the names of the students"
   puts "To finish, hit return twice\n"
-
-  # create an empty array to store names
-  students = []
 
   # get the first name, with no line break
   name = gets.tr("\n", "")
@@ -159,7 +161,7 @@ def input_students
     puts("\nadding new student:\nname: #{name}\nd.o.b #{dob}\nheight: #{height}\nc.o.b #{cob}\nhobbies: #{hobbies.join(", ")}\n")
 
     # add student hash to array
-    students << {
+    @students << {
       name: name,
       cohort: cohort,
       dob: dob,
@@ -168,31 +170,27 @@ def input_students
       hobbies: hobbies
     }
 
-    student_plural = (students.count == 1) ? "student" : "students"
-    puts "Now we have #{students.count} #{student_plural}\n"
+    student_plural = (@students.count == 1) ? "student" : "students"
+    puts "Now we have #{@students.count} #{student_plural}\n"
 
     # get the next name from user
     name = gets.tr("\n", "")
   end
 
-  # return the array of students
-  students
 end
 
 
 # prints the student list header
 def print_header
 
-  width = 16
-
   puts "The students of Villains Academy"
   puts "%s %s %s %s %s %s %s" % [
     "ID".ljust(2),
-    "Name".ljust(width),
-    "Cohort".ljust(width),
-    "D.O.B".ljust(width),
-    "Height(cm)".ljust(width),
-    "C.O.B".ljust(width),
+    "Name".ljust(@width),
+    "Cohort".ljust(@width),
+    "D.O.B".ljust(@width),
+    "Height(cm)".ljust(@width),
+    "C.O.B".ljust(@width),
     "Hobbies"
   ]
   puts "-------------"
@@ -202,13 +200,11 @@ end
 # pretty prints student data from hash
 def print_name(student, index=-1)
 
-  width = 16
-
-  name = ("%s" % student[:name]).ljust(width)
-  cohort = ("%s" % student[:cohort]).ljust(width)
-  dob = ("%s" % student[:dob]).ljust(width)
-  height = ("%scm" % student[:height]).ljust(width)
-  cob = ("%s" % student[:cob]).ljust(width)
+  name = ("%s" % student[:name]).ljust(@width)
+  cohort = ("%s" % student[:cohort]).ljust(@width)
+  dob = ("%s" % student[:dob]).ljust(@width)
+  height = ("%scm" % student[:height]).ljust(@width)
+  cob = ("%s" % student[:cob]).ljust(@width)
   hobbies = "%s" % student[:hobbies].join(', ')
 
     # supports printing with or without index
@@ -223,9 +219,7 @@ end
 
 
 # prints the list body
-def print_list(names)
-
-  if names.empty? then return end
+def print_list
 
   # using 'each_with_index'
   #names.each_with_index do |name, index|
@@ -234,21 +228,21 @@ def print_list(names)
 
   # using 'while'
   i = 0
-  while i < names.length do
-    print_name(names[i], i)
+  while i < @students.length do
+    print_name(@students[i], i)
     i += 1
   end
 end
 
 
 # prints the list grouped by cohort
-def print_by_cohort(names)
+def print_by_cohort
 
   # for each month in the year (in order)
   Date::MONTHNAMES.each do |month|
 
     # find students in this months cohort
-    list = names.select {|name| name[:cohort] == month}
+    list = @students.select {|name| name[:cohort] == month}
 
     # if the cohort is empty and skip_empty is true, skip
     if list.length == 0 then next
@@ -267,16 +261,16 @@ end
 
 
 # prints a list of students in a specific cohort
-def print_cohort(names, month)
+def print_cohort(month)
 
   puts "All students on %s cohort" % month
-  print_list(names.select {|name| name[:cohort] == month})
+  print_list(@students.select {|name| name[:cohort] == month})
 
 end
 
 
 # prints list of names starting with specific letter
-def print_names_starting_with(names, letter)
+def print_names_starting_with(letter)
 
   # check that a letter was supplied
   if letter.empty? then
@@ -295,7 +289,7 @@ def print_names_starting_with(names, letter)
   end
 
   puts "All names starting with %s" % letter
-  names.select {|anyname| anyname[:name][0].downcase == letter.downcase}.each_with_index do |name, index|
+  @students.select {|anyname| anyname[:name][0].downcase == letter.downcase}.each_with_index do |name, index|
     print_name(name, index)
   end
 end
@@ -312,119 +306,67 @@ end
 
 
 # prints the student list footer
-def print_footer(names)
-  puts "Overall, we have #{names.count} great students\n"
+def print_footer
+  puts "Overall, we have #{@students.count} great students\n"
 end
 
 
-# students = input_students
+# saves students to csv file
+def save_students
+  file = File.open("students.csv", "w")
+  @students.each do |student|
+    student_data = [student[:name], student[:cohort]]
+    csv_line = student_data.join(",")
+    file.puts csv_line
+  end
+  file.close
+end
 
-# if students.count > 0 then
-#  print_header
-#  #print_list(students)
-#  #print_names_starting_with(students, "M")
-#  #print_short_names(students, 12)
-#  print_by_cohort(students)
-#  print_footer(students)
-# end
 
-def interactive_menu
+# displays help menu
+def print_help
+  puts "1. Input the students"
+  puts "2. Show the students"
+  puts "3. Save the list to students.csv"
+  puts "9. Exit"
+end
 
-  def print_help
-    printf "
-      Options:
-        h.  Show this list
-        1.  Input Students
-        2.  Show all students
-          -2a. Show students by cohort month
-          -2b. Show students in specific cohort
-          -2c. Show students with names starting with char X
-          -2d. show students with names less than N chars
 
-        9.  Exit
-    "
+# displays students
+def show_students
+
+  if @students.empty? then
+    puts "Student list is empty\n"
+    return
   end
 
+  print_header
+  print_list
+  print_footer
+end
 
-  print_help()
 
+# main menu loop
+def interactive_menu
 
-  students = []
-
+  def process(selection)
+    case selection
+    when "1"
+      input_students
+    when "2"
+      show_students
+    when "3"
+      save_students
+    when "9"
+      exit # this will cause the program to terminate
+    else
+      puts "I don't know what you meant, try again"
+    end
+  end
 
   while true do
-
-    puts "\nEnter a command or enter 'h' for help"
-
-    # ask for input
-    input = gets.chomp
-
-    # skip this loop iteration if input is empty
-    if input.empty? then next end
-
-
-    # if the input is 'h' print the help message
-    if input[0].downcase == "h"
-      print_help
-
-
-    # if the input is '1' the start the input method
-    elsif input[0] == "1" then
-      input_students
-
-    # if the input is '2',
-    # check second char for sub-group
-    elsif input[0] == "2"
-
-      # make sure there is a subgroup defined
-      if input.length > 1 then
-
-        # sub-group 'a' print by cohort
-        if input[1] == "a" then
-          print_by_cohort(students)
-
-        # sub-group 'b' print by specific cohort
-        elsif input[1] == "b" then
-          puts "Enter a cohort month"
-          month = gets.chomp.capitalize
-          if Date::MONTHNAMES.include? month then
-             print_cohort(students, month)
-          else
-            puts "%s is not a valid cohort month" % month
-          end
-
-        # sub-group 'c' print names with specific starting character
-        elsif input[1] == "c"
-          puts "Enter a character"
-          char = gets.chomp
-          print_names_starting_with(students, char)
-
-        # sub-group 'c' print names shorter than N characters
-        elsif input[1] == "d"
-          puts "Enter a maximum character count"
-          num = gets.chomp
-          print_short_names(students, num)
-
-        # there was in input starting with '2' but its not recognized
-        else
-          puts "Unknown command: %s" % input
-        end
-
-      # no sub-group, default print
-      else
-        print_header
-        print_list(students)
-        print_footer(students)
-      end
-
-    # input is 9, exit
-    elsif input[0] == "9"
-      exit
-
-    # there was in input but its not recognized
-    else
-      puts "Unknown command: %s" % input
-    end
+    print_help
+    process(gets.chomp)
   end
 end
 
