@@ -268,6 +268,12 @@ def print_by_cohort(names, print_heading=false)
 end
 
 
+# prints a list of students in a specific cohort
+def print_cohort(names, month)
+
+end
+
+
 # prints list of names starting with specific letter
 def print_names_starting_with(names, letter)
 
@@ -303,13 +309,90 @@ def print_footer(names)
 end
 
 
-students = input_students
+# students = input_students
 
-if students.count > 0 then
-  print_header
-  #print_list(students)
-  #print_names_starting_with(students, "M")
-  #print_short_names(students, 12)
-  print_by_cohort(students)
-  print_footer(students)
+# if students.count > 0 then
+#  print_header
+#  #print_list(students)
+#  #print_names_starting_with(students, "M")
+#  #print_short_names(students, 12)
+#  print_by_cohort(students)
+#  print_footer(students)
+# end
+
+def interactive_menu
+
+  def print_help
+    printf "
+      Options:
+        h.  Show this list
+        1.  Input Students
+        2.  Show all students
+          -2a. Show students by cohort month
+          -2b. Show students in specific cohort
+          -2c. Show students with names starting with char X
+          -2d. show students with names less than N chars
+
+        9.  Exit
+    "
+  end
+
+  print_help()
+
+  students = []
+
+
+  while true do
+
+    puts "\nenter a command or enter 'h' for help"
+    
+    # ask for input
+    input = gets.chomp
+
+    if input.empty? then next end
+
+    if input[0].downcase == "h"
+      print_help
+
+    elsif input[0] == "1" then
+      input_students
+
+    elsif input[0] == "2"
+
+      if input.length > 1 then
+
+        if input[1] == "a" then
+          print_by_cohort(students, true)
+
+        elsif input[1] == "b" then
+          puts "Enter a cohort month"
+          month = gets.chomp.capitalize
+          if Date::MONTHNAMES.include? month then
+             print_cohort(students, month)
+          else
+            puts "%s is not a valid cohort month" % month
+          end
+
+        elsif input[1] == "c"
+          puts "Enter a character"
+          char = gets.chomp
+          print_names_starting_with(students, char)
+
+        elsif input[1] == "d"
+          puts "Enter a maximum character count"
+          num = gets.chomp
+          print_short_names(students, num)
+
+        end
+
+      else
+        print_list(students)
+      end
+
+    elsif input[0] == "9"
+      return
+    end
+  end
 end
+
+interactive_menu()
