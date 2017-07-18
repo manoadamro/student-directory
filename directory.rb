@@ -242,7 +242,7 @@ end
 
 
 # prints the list grouped by cohort
-def print_by_cohort(names, print_heading=false)
+def print_by_cohort(names)
 
   # for each month in the year (in order)
   Date::MONTHNAMES.each do |month|
@@ -255,12 +255,10 @@ def print_by_cohort(names, print_heading=false)
 
     # otherwise print cohort list
     else
-
-      # print heading if required
-      if print_heading then puts "\n %s Cohort" % month end
-
       # print list
+      print_header
       print_list(list)
+      print_footer(list)
     end
 
   end
@@ -271,6 +269,9 @@ end
 # prints a list of students in a specific cohort
 def print_cohort(names, month)
 
+  puts "All students on %s cohort" % month
+  print_list(names.select {|name| name[:cohort] == month})
+
 end
 
 
@@ -280,15 +281,20 @@ def print_names_starting_with(names, letter)
   # check that a letter was supplied
   if letter.empty? then
     puts "Could not print names starting with letter: no letter supplied"
+    return
 
   elsif !( letter =~ /[[:alpha:]]/)
     puts "Could not print names starting with letter: must be a letter. (given '#{letter}')"
+    return
 
   # make sure it was a letter
   elsif letter.length != 1
     puts "Could not print names starting with letter: must be a single letter. (given '#{letter}')"
+    return
+
   end
 
+  puts "All names starting with %s" % letter
   names.select {|anyname| anyname[:name][0].downcase == letter.downcase}.each_with_index do |name, index|
     print_name(name, index)
   end
@@ -297,6 +303,8 @@ end
 
 # prints list of names shorter then n letters
 def print_short_names(names, max_letters=12)
+
+  puts "All names shorter than %i characters" % max_letters
   names.select {|anyname| anyname[:name].length < max_letters}.each_with_index do |name, index|
     print_name(name, index)
   end
@@ -337,33 +345,45 @@ def interactive_menu
     "
   end
 
+
   print_help()
+
 
   students = []
 
 
   while true do
 
-    puts "\nenter a command or enter 'h' for help"
-    
+    puts "\nEnter a command or enter 'h' for help"
+
     # ask for input
     input = gets.chomp
 
+    # skip this loop iteration if input is empty
     if input.empty? then next end
 
+
+    # if the input is 'h' print the help message
     if input[0].downcase == "h"
       print_help
 
+
+    # if the input is '1' the start the input method
     elsif input[0] == "1" then
       input_students
 
+    # if the input is '2',
+    # check second char for sub-group
     elsif input[0] == "2"
 
+      # make sure there is a subgroup defined
       if input.length > 1 then
 
+        # sub-group 'a' print by cohort
         if input[1] == "a" then
-          print_by_cohort(students, true)
+          print_by_cohort(students)
 
+        # sub-group 'b' print by specific cohort
         elsif input[1] == "b" then
           puts "Enter a cohort month"
           month = gets.chomp.capitalize
@@ -373,26 +393,41 @@ def interactive_menu
             puts "%s is not a valid cohort month" % month
           end
 
+        # sub-group 'c' print names with specific starting character
         elsif input[1] == "c"
           puts "Enter a character"
           char = gets.chomp
           print_names_starting_with(students, char)
 
+        # sub-group 'c' print names shorter than N characters
         elsif input[1] == "d"
           puts "Enter a maximum character count"
           num = gets.chomp
           print_short_names(students, num)
 
+        # there was in input starting with '2' but its not recognized
+        else
+          puts "Unknown command: %s" % input
         end
 
+      # no sub-group, default print
       else
+        print_header
         print_list(students)
+        print_footer(students)
       end
 
+    # input is 9, exit
     elsif input[0] == "9"
-      return
+      exit
+
+    # there was in input but its not recognized
+    else
+      puts "Unknown command: %s" % input
     end
   end
 end
 
+
+# start the program [brum-brum]
 interactive_menu()
