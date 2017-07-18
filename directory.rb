@@ -47,10 +47,32 @@ def print_header
   puts "-------------"
 end
 
+def print_name(name, index=-1)
+  if index >= 0 then
+    puts "#{index + 1}. #{name[:name]} (#{name[:cohort]} cohort)"
+  else
+    puts "#{name[:name]} (#{name[:cohort]} cohort)"
+  end
+end
+
 # prints the list body
 def print_list(names)
   names.each_with_index do |name, index|
-    puts "#{index + 1}. #{name[:name]} (#{name[:cohort]} cohort)"
+    print_name(name, index)
+  end
+end
+
+# prints list of names starting with specific letter
+def print_names_starting_with(names, letter)
+  names.select {|anyname| anyname[:name].downcase[0] == letter.downcase}.each_with_index do |name, index|
+    print_name(name, index)
+  end
+end
+
+# prints list of names shorter then n letters
+def print_short_names(names, max_letters=12)
+  names.select {|anyname| anyname[:name].length < max_letters}.each_with_index do |name, index|
+    print_name(name, index)
   end
 end
 
@@ -61,5 +83,7 @@ end
 
 students = input_students
 print_header
-print_list(students)
+#print_list(students)
+#print_names_starting_with(students, "M")
+#print_short_names(students, 12)
 print_footer(students)
