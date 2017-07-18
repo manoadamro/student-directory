@@ -135,7 +135,7 @@ def input_students
   students = []
 
   # get the first name, with no line break
-  name = gets.chomp
+  name = gets.tr("\n", "")
 
   # while the name is not empty
   while !name.empty? do
@@ -172,7 +172,7 @@ def input_students
     puts "Now we have #{students.count} #{student_plural}\n"
 
     # get the next name from user
-    name = gets.chomp
+    name = gets.tr("\n", "")
   end
 
   # return the array of students
