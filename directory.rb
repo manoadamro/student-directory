@@ -34,6 +34,34 @@ end
 
 @students = []
 
+@filename = "students.csv"
+
+
+# build student hash from args
+def build_student(*args)
+  @students << {
+    name: args[0],
+    cohort: args[1],
+    dob: args[2],
+    height: args[3],
+    cob: args[4],
+    hobby: args[5]
+  }
+end
+
+
+# used for saving student list
+def student_to_list(student)
+  return [
+    student[:name],
+    student[:cohort],
+    student[:dob],
+    student[:height],
+    student[:cob],
+    student[:hobby]
+  ]
+end
+
 
 # gets the cohort month (string)
 def get_cohort(name)
@@ -44,9 +72,9 @@ def get_cohort(name)
   while true do
 
     # get the user to enter a date of birth
-    cohort = gets.chomp.capitalize
+    cohort = STDIN.gets.chomp.capitalize
 
-    return this_month if cohort.empty?
+    if cohort.empty? then return this_month end
 
     # check it is valid and return
     if Date::MONTHNAMES.include? cohort then
@@ -68,9 +96,9 @@ def get_dob(name)
   while true do
 
     # get the user to enter a date of birth
-    dob = gets.chomp.tr('/', '')
+    dob = STDIN.gets.chomp.tr('/', '')
 
-    return if dob.empty?
+    if dob.empty? then return "N/A" end
 
     # check it is valid and return
     if dob.length == 6 && dob =~ /[0-3][0-9][0-1][0-9]{3}/ then
@@ -93,9 +121,9 @@ def get_height(name)
   while true do
 
     # get the user to enter a height
-    height = gets.chomp
+    height = STDIN.gets.chomp
 
-    return if height.empty?
+    if height.empty? then return "N/A" end
 
     # check it is valid and return
     if height.is_number? then return height
@@ -114,19 +142,27 @@ def get_cob(name)
 
   puts "Enter country of birth for #{name}: -> hit return to skip"
 
+  cob = STDIN.gets.chomp
+
+  if cob.empty? then return "N/A" end
+
   # return whatever the user enters, no validation
-  return gets.chomp
+  return cob
 
 end
 
 
-# returns a formatted list of hobbies from user entry
-def get_hobbies(name)
+# returns a hobby from user entry
+def get_hobby(name)
 
-  puts "Enter hobbies for #{name}:  (separate with comma & space ', ') -> hit return to skip"
+  puts "Enter hobby for #{name}: -> hit return to skip"
+
+  hobby = gets.chomp
+
+  if hobby.empty? then return "N/A" end
 
   # return whatever the user enters, no validation
-  return gets.chomp.split(', ')
+  return hobby
 end
 
 
@@ -137,7 +173,7 @@ def input_students
   puts "To finish, hit return twice\n"
 
   # get the first name, with no line break
-  name = gets.tr("\n", "")
+  name = STDIN.gets.tr("\n", "")
 
   # while the name is not empty
   while !name.empty? do
@@ -154,27 +190,19 @@ def input_students
     # get country of birth for the new student
     cob = get_cob(name)
 
-    # get list of hobbies for the new student
-    hobbies = get_hobbies(name)
+    # get hobby for the new student
+    hobby = get_hobby(name)
 
     # print out the data we just collected
-    puts("\nadding new student:\nname: #{name}\nd.o.b #{dob}\nheight: #{height}\nc.o.b #{cob}\nhobbies: #{hobbies.join(", ")}\n")
+    puts("\nadding new student:\nname: #{name}\nd.o.b #{dob}\nheight: #{height}\nc.o.b #{cob}\nhobby: #{hobby}\n")
 
-    # add student hash to array
-    @students << {
-      name: name,
-      cohort: cohort,
-      dob: dob,
-      height: height,
-      cob: cob,
-      hobbies: hobbies
-    }
+    build_student(name, cohort, dob, height, cob, hobby)
 
     student_plural = (@students.count == 1) ? "student" : "students"
     puts "Now we have #{@students.count} #{student_plural}\n"
 
     # get the next name from user
-    name = gets.tr("\n", "")
+    name = STDIN.gets.tr("\n", "")
   end
 
 end
@@ -191,7 +219,7 @@ def print_header
     "D.O.B".ljust(@width),
     "Height(cm)".ljust(@width),
     "C.O.B".ljust(@width),
-    "Hobbies"
+    "hobby"
   ]
   puts "-------------"
 end
@@ -205,16 +233,16 @@ def print_name(student, index=-1)
   dob = ("%s" % student[:dob]).ljust(@width)
   height = ("%scm" % student[:height]).ljust(@width)
   cob = ("%s" % student[:cob]).ljust(@width)
-  hobbies = "%s" % student[:hobbies].join(', ')
+  hobby = "%s" % student[:hobby].ljust(@width)
 
     # supports printing with or without index
     puts index >= 0 ?
 
       # if an index was supplied, print with index
-      "#{(index + 1).to_s.ljust(2)} #{name} #{cohort} #{dob} #{height} #{cob} #{hobbies}" :
+      "#{(index + 1).to_s.ljust(2)} #{name} #{cohort} #{dob} #{height} #{cob} #{hobby}" :
 
       # otherwise print without index
-      "   #{name} #{cohort} #{dob} #{height} #{cob} #{hobbies}"
+      "   #{name} #{cohort} #{dob} #{height} #{cob} #{hobby}"
 end
 
 
@@ -234,6 +262,124 @@ def print_list
   end
 end
 
+
+# prints the student list footer
+def print_footer
+  puts "Overall, we have #{@students.count} great students\n"
+end
+
+
+@filename = ""
+
+# saves students to csv file
+def save_students
+
+  # open the file for writing
+  file = File.open(@filename, "w")
+  # iterate over the array of students
+  @students.each do |student|
+    student_data = student_to_list(student)
+    csv_line = student_data.join(",")
+    file.puts csv_line
+  end
+  file.close
+  puts "Saved #{@students.count} items to #{@filename}"
+end
+
+
+# loads students from csv file
+def load_students
+
+  while @filename.empty? do
+    puts "enter a csv file to load. (hit return for default 'students.csv')"
+    input_name = STDIN.gets.chomp
+    if input_name.empty? then
+      @filename = "students.csv"
+    else
+      if !File.exist?(input_name) then
+        puts "%s is not a valid file" % input_name
+        exit
+      else
+        @filename = input_name
+      end
+    end
+  end
+
+
+  file = File.open(@filename, "r")
+  @students = []
+  file.readlines.each do |line|
+    build_student(*line.chomp.split(','))
+  end
+  file.close
+  puts "Loaded #{@students.count} items from #{@filename}"
+end
+
+
+
+# displays help menu
+def print_help
+  puts "------------------------------------"
+  puts "1. Input the students"
+  puts "2. Show the students"
+  puts "3. Save the list to students.csv"
+  puts "4. Load the list from students.csv"
+  puts "9. Exit"
+  puts "------------------------------------\n"
+end
+
+
+# displays students
+def show_students
+
+  if @students.empty? then
+    puts "Student list is empty\n"
+    return
+  end
+
+  print_header
+  print_list
+  print_footer
+end
+
+
+# called when interactive menu receives input
+def process(selection)
+  case selection
+  when "1"
+    input_students
+  when "2"
+    show_students
+  when "3"
+    save_students
+  when "4"
+    load_students
+  when "9"
+    exit # this will cause the program to terminate
+  else
+    puts "I don't know what you meant, try again"
+  end
+end
+
+
+# main menu loop
+def interactive_menu
+
+  load_students
+
+  while true do
+    print_help
+    process(STDIN.gets.chomp)
+  end
+end
+
+
+# start the program [brum-brum]
+interactive_menu()
+
+
+
+# OTHER METHODS....
 
 # prints the list grouped by cohort
 def print_by_cohort
@@ -303,87 +449,3 @@ def print_short_names(names, max_letters=12)
     print_name(name, index)
   end
 end
-
-
-# prints the student list footer
-def print_footer
-  puts "Overall, we have #{@students.count} great students\n"
-end
-
-
-# saves students to csv file
-def save_students
-  file = File.open("students.csv", "w")
-  @students.each do |student|
-    student_data = [student[:name], student[:cohort]]
-    csv_line = student_data.join(",")
-    file.puts csv_line
-  end
-  file.close
-end
-
-
-# loads students from csv file
-def load_students
-  file = File.open("students.csv", "r")
-  file.readlines.each do |line|
-  name, cohort = line.chomp.split(',')
-    @students << {name: name, cohort: cohort.to_sym}
-  end
-  file.close
-end
-
-
-# displays help menu
-def print_help
-  puts "1. Input the students"
-  puts "2. Show the students"
-  puts "3. Save the list to students.csv"
-  puts "4. Load the list from students.csv"
-  puts "9. Exit"
-end
-
-
-# displays students
-def show_students
-
-  if @students.empty? then
-    puts "Student list is empty\n"
-    return
-  end
-
-  print_header
-  print_list
-  print_footer
-end
-
-
-# main menu loop
-def interactive_menu
-
-  def process(selection)
-    case selection
-    when "1"
-      input_students
-    when "2"
-      show_students
-    when "3"
-      save_students
-    when "4"
-      load_students
-    when "9"
-      exit # this will cause the program to terminate
-    else
-      puts "I don't know what you meant, try again"
-    end
-  end
-
-  while true do
-    print_help
-    process(gets.chomp)
-  end
-end
-
-
-# start the program [brum-brum]
-interactive_menu()
