@@ -19,9 +19,13 @@ require 'date'
 
 # used for date validation
 class String
+
+  # returns true if a string contains only numeric characters
   def is_number?
     true if Float(self) rescue false
+
   end
+
 end
 
 
@@ -163,7 +167,9 @@ def input_students
       cob: cob,
       hobbies: hobbies
     }
-    puts "Now we have #{students.count} students\n"
+
+    student_plural = (students.count == 1) ? "student" : "students"
+    puts "Now we have #{students.count} #{student_plural}\n"
 
     # get the next name from user
     name = gets.chomp
@@ -193,6 +199,7 @@ def print_header
 end
 
 
+# pretty prints student data from hash
 def print_name(student, index=-1)
 
   width = 16
@@ -234,6 +241,33 @@ def print_list(names)
 end
 
 
+# prints the list grouped by cohort
+def print_by_cohort(names, print_heading=false)
+
+  # for each month in the year (in order)
+  Date::MONTHNAMES.each do |month|
+
+    # find students in this months cohort
+    list = names.select {|name| name[:cohort] == month}
+
+    # if the cohort is empty and skip_empty is true, skip
+    if list.length == 0 then next
+
+    # otherwise print cohort list
+    else
+
+      # print heading if required
+      if print_heading then puts "\n %s Cohort" % month end
+
+      # print list
+      print_list(list)
+    end
+
+  end
+
+end
+
+
 # prints list of names starting with specific letter
 def print_names_starting_with(names, letter)
 
@@ -271,7 +305,8 @@ end
 
 students = input_students
 print_header
-print_list(students)
+#print_list(students)
 #print_names_starting_with(students, "M")
 #print_short_names(students, 12)
+print_by_cohort(students)
 print_footer(students)
