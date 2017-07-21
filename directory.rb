@@ -289,6 +289,7 @@ def load_students
   while @filename.empty? do
     if !ARGV.first.nil? then
       @filename = ARGV.first
+      ARGV.first = nil
       break
     else
       puts "enter a csv file to load. (hit return for default 'students.csv')"
