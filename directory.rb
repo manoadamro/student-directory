@@ -291,6 +291,12 @@ end
 def load_students
 
   while @filename.empty? do
+
+    if !ARGV.first.nil? then
+      @filename = ARGV.first
+      break
+    end
+
     puts "enter a csv file to load. (hit return for default 'students.csv')"
     input_name = STDIN.gets.chomp
     if input_name.empty? then
