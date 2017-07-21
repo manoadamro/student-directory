@@ -16,7 +16,7 @@
 #]
 
 require 'date'
-
+require 'csv'
 
 # used for date validation
 class String
@@ -274,15 +274,11 @@ end
 # saves students to csv file
 def save_students
 
-  # open the file for writing
-  file = File.open(@filename, "w")
-  # iterate over the array of students
-  @students.each do |student|
-    student_data = student_to_list(student)
-    csv_line = student_data.join(",")
-    file.puts csv_line
+  CSV.open(@filename, "wb") do |csv|
+    @students.each do |student|
+      csv << student_to_list(student)
+    end
   end
-  file.close
   puts "Saved #{@students.count} items to #{@filename}"
 end
 
@@ -291,7 +287,6 @@ end
 def load_students
 
   while @filename.empty? do
-
     if !ARGV.first.nil? then
       @filename = ARGV.first
       break
@@ -311,13 +306,10 @@ def load_students
     end
   end
 
-
-  file = File.open(@filename, "r")
   @students = []
-  file.readlines.each do |line|
-    build_student(*line.chomp.split(','))
+  CSV.foreach(@filename) do |row|
+    build_student(*row)
   end
-  file.close
   puts "Loaded #{@students.count} items from #{@filename}"
 end
 
