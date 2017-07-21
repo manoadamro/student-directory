@@ -288,9 +288,13 @@ def load_students
 
   while @filename.empty? do
     if !ARGV.first.nil? then
-      @filename = ARGV.first
-      ARGV.first = nil
-      break
+      if File.exist?(ARGV.first) then
+        @filename = ARGV.first
+        ARGV.first = nil
+        break
+      else
+        puts "%s is not a valid file" % ARGV.first
+        ARGV.first = nil
     else
       puts "enter a csv file to load. (hit return for default 'students.csv')"
       input_name = STDIN.gets.chomp
