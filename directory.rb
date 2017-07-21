@@ -290,18 +290,18 @@ def load_students
     if !ARGV.first.nil? then
       @filename = ARGV.first
       break
-    end
-
-    puts "enter a csv file to load. (hit return for default 'students.csv')"
-    input_name = STDIN.gets.chomp
-    if input_name.empty? then
-      @filename = "students.csv"
     else
-      if !File.exist?(input_name) then
-        puts "%s is not a valid file" % input_name
-        exit
+      puts "enter a csv file to load. (hit return for default 'students.csv')"
+      input_name = STDIN.gets.chomp
+      if input_name.empty? then
+        @filename = "students.csv"
       else
-        @filename = input_name
+        if !File.exist?(input_name) then
+          puts "%s is not a valid file" % input_name
+          exit
+        else
+          @filename = input_name
+        end
       end
     end
   end
